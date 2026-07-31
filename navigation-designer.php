@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Navigation Designer
  * Description: Admin controls for spacing and color on the navigation and navigation-submenu blocks, for both desktop and mobile/responsive views. Generates a CSS override that takes precedence over the theme's core/navigation styles.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: injurylawyers.com
  * Text Domain: navigation-designer
  */
