@@ -1,20 +1,20 @@
-<?php
+﻿<?php
 /**
- * Plugin Name: Nav Style Controls
+ * Plugin Name: Navigation Designer
  * Description: Admin controls for spacing and color on the navigation and navigation-submenu blocks, for both desktop and mobile/responsive views. Generates a CSS override that takes precedence over the theme's core/navigation styles.
  * Version: 1.0.0
  * Author: injurylawyers.com
- * Text Domain: nav-style-controls
+ * Text Domain: navigation-designer
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Nav_Style_Controls {
+class Navigation_Designer {
 
 	const OPTION_KEY = 'nsc_settings';
-	const PAGE_SLUG  = 'nav-style-controls';
+	const PAGE_SLUG  = 'navigation-designer';
 
 	/** @var array Field key => sanitize type ('color', 'spacing', 'breakpoint'). */
 	private $fields = array(
@@ -51,8 +51,8 @@ class Nav_Style_Controls {
 
 	public function add_settings_page() {
 		add_theme_page(
-			__( 'Nav Style Controls', 'nav-style-controls' ),
-			__( 'Nav Style Controls', 'nav-style-controls' ),
+			__( 'Navigation Designer', 'navigation-designer' ),
+			__( 'Navigation Designer', 'navigation-designer' ),
 			'edit_theme_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_settings_page' )
@@ -140,41 +140,41 @@ class Nav_Style_Controls {
 		$s = $this->get_settings();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Nav Style Controls', 'nav-style-controls' ); ?></h1>
-			<p><?php esc_html_e( 'Override spacing and colors for the navigation and navigation-submenu blocks. Leave a field blank to fall back to the theme default.', 'nav-style-controls' ); ?></p>
+			<h1><?php esc_html_e( 'Navigation Designer', 'navigation-designer' ); ?></h1>
+			<p><?php esc_html_e( 'Override spacing and colors for the navigation and navigation-submenu blocks. Leave a field blank to fall back to the theme default.', 'navigation-designer' ); ?></p>
 
 			<form method="post" action="options.php">
 				<?php settings_fields( self::PAGE_SLUG ); ?>
 
-				<h2><?php esc_html_e( 'Desktop', 'nav-style-controls' ); ?></h2>
+				<h2><?php esc_html_e( 'Desktop', 'navigation-designer' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<?php
-					$this->color_row( 'nav_bg_color', __( 'Navigation background color', 'nav-style-controls' ), $s );
-					$this->color_row( 'nav_text_color', __( 'Navigation text color', 'nav-style-controls' ), $s );
-					$this->color_row( 'nav_link_hover_color', __( 'Link hover/focus color', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'nav_item_padding_y', __( 'Nav item padding (top/bottom)', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'nav_item_padding_x', __( 'Nav item padding (left/right)', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'nav_block_gap', __( 'Block gap between nav items', 'nav-style-controls' ), $s );
-					$this->color_row( 'submenu_bg_color', __( 'Submenu background color', 'nav-style-controls' ), $s );
-					$this->color_row( 'submenu_text_color', __( 'Submenu text color', 'nav-style-controls' ), $s );
-					$this->color_row( 'submenu_hover_color', __( 'Submenu link hover/focus color', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'submenu_item_padding_y', __( 'Submenu item padding (top/bottom)', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'submenu_item_padding_x', __( 'Submenu item padding (left/right)', 'nav-style-controls' ), $s );
+					$this->color_row( 'nav_bg_color', __( 'Navigation background color', 'navigation-designer' ), $s );
+					$this->color_row( 'nav_text_color', __( 'Navigation text color', 'navigation-designer' ), $s );
+					$this->color_row( 'nav_link_hover_color', __( 'Link hover/focus color', 'navigation-designer' ), $s );
+					$this->spacing_row( 'nav_item_padding_y', __( 'Nav item padding (top/bottom)', 'navigation-designer' ), $s );
+					$this->spacing_row( 'nav_item_padding_x', __( 'Nav item padding (left/right)', 'navigation-designer' ), $s );
+					$this->spacing_row( 'nav_block_gap', __( 'Block gap between nav items', 'navigation-designer' ), $s );
+					$this->color_row( 'submenu_bg_color', __( 'Submenu background color', 'navigation-designer' ), $s );
+					$this->color_row( 'submenu_text_color', __( 'Submenu text color', 'navigation-designer' ), $s );
+					$this->color_row( 'submenu_hover_color', __( 'Submenu link hover/focus color', 'navigation-designer' ), $s );
+					$this->spacing_row( 'submenu_item_padding_y', __( 'Submenu item padding (top/bottom)', 'navigation-designer' ), $s );
+					$this->spacing_row( 'submenu_item_padding_x', __( 'Submenu item padding (left/right)', 'navigation-designer' ), $s );
 					?>
 				</table>
 
-				<h2><?php esc_html_e( 'Mobile / Responsive', 'nav-style-controls' ); ?></h2>
+				<h2><?php esc_html_e( 'Mobile / Responsive', 'navigation-designer' ); ?></h2>
 				<table class="form-table" role="presentation">
-					<?php $this->text_row( 'mobile_breakpoint', __( 'Breakpoint (px, max-width)', 'nav-style-controls' ), $s ); ?>
+					<?php $this->text_row( 'mobile_breakpoint', __( 'Breakpoint (px, max-width)', 'navigation-designer' ), $s ); ?>
 					<?php
-					$this->color_row( 'mobile_overlay_bg_color', __( 'Mobile menu overlay background', 'nav-style-controls' ), $s );
-					$this->color_row( 'mobile_overlay_text_color', __( 'Mobile menu overlay text color', 'nav-style-controls' ), $s );
-					$this->color_row( 'mobile_toggle_bg_color', __( 'Menu toggle button background', 'nav-style-controls' ), $s );
-					$this->color_row( 'mobile_toggle_text_color', __( 'Menu toggle button text/icon color', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'mobile_item_padding_y', __( 'Mobile nav item padding (top/bottom)', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'mobile_item_padding_x', __( 'Mobile nav item padding (left/right)', 'nav-style-controls' ), $s );
-					$this->spacing_row( 'mobile_submenu_indent', __( 'Mobile submenu indent (margin-left)', 'nav-style-controls' ), $s );
-					$this->color_row( 'mobile_submenu_bullet_color', __( 'Mobile submenu bullet color', 'nav-style-controls' ), $s );
+					$this->color_row( 'mobile_overlay_bg_color', __( 'Mobile menu overlay background', 'navigation-designer' ), $s );
+					$this->color_row( 'mobile_overlay_text_color', __( 'Mobile menu overlay text color', 'navigation-designer' ), $s );
+					$this->color_row( 'mobile_toggle_bg_color', __( 'Menu toggle button background', 'navigation-designer' ), $s );
+					$this->color_row( 'mobile_toggle_text_color', __( 'Menu toggle button text/icon color', 'navigation-designer' ), $s );
+					$this->spacing_row( 'mobile_item_padding_y', __( 'Mobile nav item padding (top/bottom)', 'navigation-designer' ), $s );
+					$this->spacing_row( 'mobile_item_padding_x', __( 'Mobile nav item padding (left/right)', 'navigation-designer' ), $s );
+					$this->spacing_row( 'mobile_submenu_indent', __( 'Mobile submenu indent (margin-left)', 'navigation-designer' ), $s );
+					$this->color_row( 'mobile_submenu_bullet_color', __( 'Mobile submenu bullet color', 'navigation-designer' ), $s );
 					?>
 				</table>
 
@@ -213,7 +213,7 @@ class Nav_Style_Controls {
 					name="<?php echo esc_attr( self::OPTION_KEY . '[' . $key . ']' ); ?>"
 					value="<?php echo esc_attr( $s[ $key ] ); ?>"
 					class="regular-text"
-					placeholder="<?php esc_attr_e( 'e.g. 1em, 16px, 0.5rem', 'nav-style-controls' ); ?>"
+					placeholder="<?php esc_attr_e( 'e.g. 1em, 16px, 0.5rem', 'navigation-designer' ); ?>"
 				/>
 			</td>
 		</tr>
@@ -387,4 +387,4 @@ class Nav_Style_Controls {
 	}
 }
 
-new Nav_Style_Controls();
+new Navigation_Designer();
