@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Navigation Designer
  * Description: Adds a per-instance item-padding override for the Navigation block, applied via a generated CSS file (not inline styles, not theme.json). Color is handled entirely by the block's own native color controls.
- * Version: 2.0.0-dev
+ * Version: 2.0.0
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: injurylawyers.com
