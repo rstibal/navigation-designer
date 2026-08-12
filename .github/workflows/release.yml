@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Stage plugin files
+        run: |
+          mkdir -p stage/navigation-designer
+          cp navigation-designer.php uninstall.php README.md stage/navigation-designer/
+          cp -r includes stage/navigation-designer/
+          cp -r build stage/navigation-designer/
+
+      - name: Build release zip
+        # Linux zip always writes forward-slash paths, unlike Windows
+        # Compress-Archive / System.IO.Compression.ZipFile, which produced
+        # backslash-separated entries that WordPress could not extract.
+        run: |
+          cd stage
+          zip -r "../navigation-designer-${GITHUB_REF_NAME#v}.zip" navigation-designer
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: navigation-designer-*.zip
