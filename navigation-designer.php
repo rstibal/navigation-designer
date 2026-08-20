@@ -1,11 +1,12 @@
 <?php
 /**
  * Plugin Name: Navigation Designer
- * Description: Adds per-instance style overrides for the Navigation block's wrapper/top-level items, submenu panel, and submenu items (color, border, spacing, typography, desktop/mobile tiers), applied via a generated CSS file (not inline styles, not theme.json).
- * Version: 2.1.0
+ * Description: Per-instance style controls for the Navigation block — separate color, border, spacing, and typography settings for the nav bar, its submenus, and submenu items, at both desktop and mobile breakpoints, compiled to a generated CSS file rather than inline styles or theme.json.
+ * Version: 2.1.1
  * Requires at least: 6.5
  * Requires PHP: 7.4
- * Author: injurylawyers.com
+ * Author: Rob Stibal
+ * Author URI: https://robstibal.com
  * Text Domain: navigation-designer
  */
 
