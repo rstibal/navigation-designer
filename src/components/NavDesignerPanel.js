@@ -1,14 +1,15 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { InspectorControls } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	ToggleControl,
-	TextControl,
-	SelectControl,
-	ButtonGroup,
-	Button,
-} from '@wordpress/components';
+// Deliberately limited to the handful of @wordpress/components exports the
+// pre-rewrite version of this plugin already proved safe on every supported
+// WP version (PanelBody, ToggleControl, TextControl, InspectorControls).
+// Selects and the breakpoint switcher use plain native elements instead of
+// SelectControl/ButtonGroup/Button — those newer additions were the
+// suspected cause of a "React error #130 (element type is invalid)" crash
+// on at least one real install, and a native <select>/<button> can never be
+// undefined the way a package export can be on a mismatched WP version.
+import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
 import { generateId } from '../utils/generate-id';
 import { defaultInstance, normalizeInstance } from '../schema';
 
@@ -114,13 +115,25 @@ function Field( { field, value, onChange } ) {
 
 	if ( meta.type === 'select' ) {
 		return (
-			<SelectControl
-				label={ meta.label }
-				value={ value }
-				options={ meta.options }
-				onChange={ onChange }
-				__nextHasNoMarginBottom
-			/>
+			<div className="components-base-control" style={ { marginBottom: '1.2em' } }>
+				<label
+					className="components-base-control__label"
+					style={ { display: 'block', marginBottom: '0.5em' } }
+				>
+					{ meta.label }
+				</label>
+				<select
+					value={ value }
+					onChange={ ( event ) => onChange( event.target.value ) }
+					style={ { width: '100%' } }
+				>
+					{ meta.options.map( ( option ) => (
+						<option key={ option.value } value={ option.value }>
+							{ option.label }
+						</option>
+					) ) }
+				</select>
+			</div>
 		);
 	}
 
@@ -143,22 +156,23 @@ function GroupSection( { group, values, onFieldChange } ) {
 		<PanelBody title={ GROUP_TITLES[ group ] } initialOpen={ false }>
 			<div style={ { marginBottom: '1em' } }>
 				<div style={ { marginBottom: '0.5em', fontWeight: 500 } }>{ __( 'Breakpoint', 'navigation-designer' ) }</div>
-				<ButtonGroup>
-					<Button
-						variant={ breakpoint === 'desktop' ? 'primary' : 'secondary' }
-						isPressed={ breakpoint === 'desktop' }
+				<div className="components-button-group">
+					<button
+						type="button"
+						className={ `components-button is-small ${ breakpoint === 'desktop' ? 'is-primary' : 'is-secondary' }` }
 						onClick={ () => setBreakpoint( 'desktop' ) }
 					>
 						{ __( 'Desktop', 'navigation-designer' ) }
-					</Button>
-					<Button
-						variant={ breakpoint === 'mobile' ? 'primary' : 'secondary' }
-						isPressed={ breakpoint === 'mobile' }
+					</button>
+					<button
+						type="button"
+						className={ `components-button is-small ${ breakpoint === 'mobile' ? 'is-primary' : 'is-secondary' }` }
+						style={ { marginLeft: '0.5em' } }
 						onClick={ () => setBreakpoint( 'mobile' ) }
 					>
 						{ __( 'Mobile', 'navigation-designer' ) }
-					</Button>
-				</ButtonGroup>
+					</button>
+				</div>
 			</div>
 
 			{ GROUP_CATEGORIES[ group ].map( ( category ) => (

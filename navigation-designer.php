@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Navigation Designer
  * Description: Per-instance style controls for the Navigation block — separate color, border, spacing, and typography settings for the nav bar, its submenus, and submenu items, at both desktop and mobile breakpoints, compiled to a generated CSS file rather than inline styles or theme.json.
- * Version: 2.1.2
+ * Version: 2.1.3
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: Rob Stibal
