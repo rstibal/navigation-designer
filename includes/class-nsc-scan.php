@@ -3,8 +3,8 @@
  * Walks every post type that can embed a core/navigation instance
  * (reusable wp_navigation entities, template parts, templates) and collects
  * the attributes for each instance that has a navDesignerId — i.e. every
- * instance with an active item-padding override (the editor JS only stamps
- * the id when that toggle is turned on).
+ * instance with an active style override (the editor JS only stamps the id
+ * when that toggle is turned on).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

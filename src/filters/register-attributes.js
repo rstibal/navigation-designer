@@ -1,15 +1,5 @@
 import { addFilter } from '@wordpress/hooks';
-
-// Background/text color are intentionally not part of this shape — see
-// NavDesignerPanel.js for why. Padding has no native per-item equivalent on
-// core/navigation, so it keeps its own override tier.
-const DEFAULT_INSTANCE = {
-	enabled: false,
-	desktop: {
-		itemPaddingY: '',
-		itemPaddingX: '',
-	},
-};
+import { defaultInstance } from '../schema';
 
 function addNavDesignerAttributes( settings, name ) {
 	if ( name !== 'core/navigation' ) {
@@ -20,7 +10,7 @@ function addNavDesignerAttributes( settings, name ) {
 		...settings.attributes,
 		navDesigner: {
 			type: 'object',
-			default: DEFAULT_INSTANCE,
+			default: defaultInstance(),
 		},
 		navDesignerId: {
 			type: 'string',

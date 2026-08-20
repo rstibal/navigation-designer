@@ -1,21 +1,19 @@
 <?php
 /**
  * Single source of truth for the Navigation Designer field schema, defaults,
- * and native-color extraction.
+ * legacy-shape migration, and native-color extraction.
  *
- * Phase 1 scope: desktop-tier fields only on core/navigation. Tablet/mobile
- * tiers and core/navigation-submenu are added in Phase 2 without changing
- * this shape's contract.
+ * Three style groups, each with its own desktop/mobile field set:
+ *  - nav:         the wrapper + top-level items (border/radius/shadow/gap on
+ *                  the wrapper; hover/focus color, spacing, typography on
+ *                  top-level item links). Base background/text color stays
+ *                  native (Styles > Color) — core already has that control.
+ *  - submenu:      the dropdown panel. Core has no native styling surface
+ *                  here at all, so this group owns base background/text too.
+ *  - submenuItem:  the links inside the dropdown panel.
  *
- * Background/text color are intentionally NOT part of this schema at all:
- * core/navigation already has native per-instance color controls
- * (Styles > Color), so a second custom control for the same value would just
- * be a competing, duplicate UI. There is also no site-wide color default —
- * that turned out to be an invisible, hard-to-debug override sitting behind
- * every nav with no clear way to reconcile it against a block's own native
- * color choice. Color is entirely native-attribute-driven; see
- * extract_native_color(). Item padding has no native per-item equivalent, so
- * it keeps its own instance-level override field with no site-wide fallback.
+ * This is the JS-mirrored PHP half of the pattern (see src/schema.js) — keep
+ * both in sync when the field lists change.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -24,40 +22,145 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class NSC_Schema {
 
-	/** @var array Per-instance override field key => sanitize type. Padding only; see class docblock. */
-	public static function instance_fields() {
+	const BREAKPOINTS = array( 'desktop', 'mobile' );
+
+	const GROUPS = array( 'nav', 'submenu', 'submenuItem' );
+
+	/** @var array Field keys for the nav group (wrapper + top-level items). */
+	public static function nav_fields() {
 		return array(
-			'itemPaddingY' => 'spacing',
-			'itemPaddingX' => 'spacing',
+			'borderWidth',
+			'borderStyle',
+			'borderColor',
+			'radius',
+			'shadow',
+			'gap',
+			'itemPaddingY',
+			'itemPaddingX',
+			'itemHoverColor',
+			'itemHoverBackground',
+			'itemFocusColor',
+			'itemFocusBackground',
+			'fontSize',
+			'fontWeight',
+			'lineHeight',
+			'letterSpacing',
+			'textTransform',
 		);
+	}
+
+	/** @var array Field keys for the submenu (dropdown panel) group. */
+	public static function submenu_fields() {
+		return array(
+			'background',
+			'text',
+			'borderWidth',
+			'borderStyle',
+			'borderColor',
+			'radius',
+			'shadow',
+			'paddingY',
+			'paddingX',
+			'offset',
+			'fontSize',
+			'fontWeight',
+			'lineHeight',
+			'letterSpacing',
+			'textTransform',
+		);
+	}
+
+	/** @var array Field keys for the submenuItem (dropdown link) group. */
+	public static function submenu_item_fields() {
+		return array(
+			'text',
+			'hoverText',
+			'hoverBackground',
+			'focusText',
+			'focusBackground',
+			'paddingY',
+			'paddingX',
+			'fontSize',
+			'fontWeight',
+			'lineHeight',
+			'letterSpacing',
+			'textTransform',
+		);
+	}
+
+	public static function fields_for_group( $group ) {
+		switch ( $group ) {
+			case 'nav':
+				return self::nav_fields();
+			case 'submenu':
+				return self::submenu_fields();
+			case 'submenuItem':
+				return self::submenu_item_fields();
+			default:
+				return array();
+		}
+	}
+
+	private static function empty_fields( array $fields ) {
+		return array_fill_keys( $fields, '' );
 	}
 
 	public static function default_instance() {
-		$tier = array();
-		foreach ( self::instance_fields() as $key => $type ) {
-			$tier[ $key ] = '';
+		$instance = array( 'enabled' => false );
+		foreach ( self::GROUPS as $group ) {
+			$fields = self::fields_for_group( $group );
+			$instance[ $group ] = array(
+				'desktop' => self::empty_fields( $fields ),
+				'mobile'  => self::empty_fields( $fields ),
+			);
 		}
-		return array(
-			'enabled' => false,
-			'desktop' => $tier,
-		);
+		return $instance;
 	}
 
 	/**
-	 * Resolves an instance's item-padding override. No site-wide fallback:
-	 * if the toggle is off or a field is blank, that field is simply unset.
-	 *
-	 * @return array Padding values, possibly containing '' for unset fields.
+	 * Accepts a raw navDesigner attribute value — current shape, legacy
+	 * (pre-tiered) shape, or anything with missing/unknown keys — and returns
+	 * the full current shape with every field present. Unknown keys are
+	 * dropped; missing fields default to ''. Non-destructive: doesn't gate on
+	 * `enabled`, since the editor UI needs stored values back even while the
+	 * toggle is off (only CSS generation gates on `enabled`).
 	 */
-	public static function merge_padding( $instance_navdesigner ) {
-		$enabled = ! empty( $instance_navdesigner['enabled'] );
-		$desktop = ( $enabled && isset( $instance_navdesigner['desktop'] ) ) ? $instance_navdesigner['desktop'] : array();
+	public static function normalize_instance( $raw ) {
+		$raw = is_array( $raw ) ? $raw : array();
 
-		$merged = array();
-		foreach ( self::instance_fields() as $key => $type ) {
-			$merged[ $key ] = isset( $desktop[ $key ] ) ? $desktop[ $key ] : '';
+		// Legacy shape: { enabled, desktop: { itemPaddingY, itemPaddingX } }
+		// with no `nav` key. Migrate the two fields it had into the new
+		// nav.desktop slot; everything else starts empty.
+		if ( isset( $raw['desktop'] ) && ! isset( $raw['nav'] ) && is_array( $raw['desktop'] ) ) {
+			$legacy = $raw['desktop'];
+			$raw    = array(
+				'enabled' => ! empty( $raw['enabled'] ),
+				'nav'     => array(
+					'desktop' => array(
+						'itemPaddingY' => isset( $legacy['itemPaddingY'] ) ? $legacy['itemPaddingY'] : '',
+						'itemPaddingX' => isset( $legacy['itemPaddingX'] ) ? $legacy['itemPaddingX'] : '',
+					),
+				),
+			);
 		}
-		return $merged;
+
+		$result            = self::default_instance();
+		$result['enabled'] = ! empty( $raw['enabled'] );
+
+		foreach ( self::GROUPS as $group ) {
+			foreach ( self::BREAKPOINTS as $breakpoint ) {
+				if ( empty( $raw[ $group ][ $breakpoint ] ) || ! is_array( $raw[ $group ][ $breakpoint ] ) ) {
+					continue;
+				}
+				foreach ( $raw[ $group ][ $breakpoint ] as $key => $value ) {
+					if ( array_key_exists( $key, $result[ $group ][ $breakpoint ] ) ) {
+						$result[ $group ][ $breakpoint ][ $key ] = is_scalar( $value ) ? (string) $value : '';
+					}
+				}
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -89,7 +192,13 @@ class NSC_Schema {
 		);
 	}
 
-	private static function sanitize_css_value( $value ) {
+	/**
+	 * Permissive but injection-safe: allows the characters real CSS values
+	 * need (hex colors, units, decimals, percentages, function calls like
+	 * rgba()/var(), multi-value shorthand and box-shadow lists) while
+	 * stripping anything that could break out of a declaration (";", "{", "}").
+	 */
+	public static function sanitize_css_value( $value ) {
 		return preg_replace( '/[^#a-zA-Z0-9(),.%\s-]/', '', (string) $value );
 	}
 }

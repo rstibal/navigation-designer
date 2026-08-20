@@ -1,9 +1,9 @@
 <?php
 /**
  * Injects a stable data-nsc-id attribute into the rendered wrapper of any
- * core/navigation instance that has an active item-padding override, so the
- * CSS generator can target it with a scoped selector. Additive only — no
- * markup restructuring.
+ * core/navigation instance that has an active nav/submenu/submenu-item style
+ * override, so the CSS generator can target it with a scoped selector.
+ * Additive only — no markup restructuring.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

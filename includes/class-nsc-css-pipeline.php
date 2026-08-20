@@ -1,8 +1,9 @@
 <?php
 /**
- * Orchestrates CSS regeneration: scans the site for active item-padding
- * overrides, builds each instance's scoped rule, writes them to a physical
- * file in uploads, and enqueues that file after the theme's global styles.
+ * Orchestrates CSS regeneration: scans the site for active nav/submenu/
+ * submenu-item style overrides, builds each instance's scoped rules, writes
+ * them to a physical file in uploads, and enqueues that file after the
+ * theme's global styles.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -52,8 +53,8 @@ class NSC_CSS_Pipeline {
 		foreach ( $this->scan->collect_instances() as $instance ) {
 			$attrs       = $instance['attrs'];
 			$navdesigner = isset( $attrs['navDesigner'] ) ? $attrs['navDesigner'] : array();
-			$padding     = NSC_Schema::merge_padding( $navdesigner );
-			$css        .= $this->generator->build_instance_css( $instance['id'], $padding );
+			$normalized  = NSC_Schema::normalize_instance( $navdesigner );
+			$css        .= $this->generator->build_instance_css( $instance['id'], $normalized );
 		}
 
 		global $wp_filesystem;

@@ -2,7 +2,9 @@
 /**
  * Registers the navDesigner/navDesignerId attributes on core/navigation so
  * per-instance overrides persist in the block's serialized comment, same as
- * any core attribute.
+ * any core attribute. The default here is intentionally the full current
+ * shape (see NSC_Schema::default_instance()) — legacy saved content with the
+ * old flat shape is upgraded on read by NSC_Schema::normalize_instance().
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
