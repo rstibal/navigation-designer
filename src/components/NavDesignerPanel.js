@@ -6,8 +6,8 @@ import {
 	ToggleControl,
 	TextControl,
 	SelectControl,
-	ToggleGroupControl,
-	ToggleGroupControlOption,
+	ButtonGroup,
+	Button,
 } from '@wordpress/components';
 import { generateId } from '../utils/generate-id';
 import { defaultInstance, normalizeInstance } from '../schema';
@@ -141,16 +141,25 @@ function GroupSection( { group, values, onFieldChange } ) {
 
 	return (
 		<PanelBody title={ GROUP_TITLES[ group ] } initialOpen={ false }>
-			<ToggleGroupControl
-				label={ __( 'Breakpoint', 'navigation-designer' ) }
-				isBlock
-				value={ breakpoint }
-				onChange={ setBreakpoint }
-				__nextHasNoMarginBottom
-			>
-				<ToggleGroupControlOption value="desktop" label={ __( 'Desktop', 'navigation-designer' ) } />
-				<ToggleGroupControlOption value="mobile" label={ __( 'Mobile', 'navigation-designer' ) } />
-			</ToggleGroupControl>
+			<div style={ { marginBottom: '1em' } }>
+				<div style={ { marginBottom: '0.5em', fontWeight: 500 } }>{ __( 'Breakpoint', 'navigation-designer' ) }</div>
+				<ButtonGroup>
+					<Button
+						variant={ breakpoint === 'desktop' ? 'primary' : 'secondary' }
+						isPressed={ breakpoint === 'desktop' }
+						onClick={ () => setBreakpoint( 'desktop' ) }
+					>
+						{ __( 'Desktop', 'navigation-designer' ) }
+					</Button>
+					<Button
+						variant={ breakpoint === 'mobile' ? 'primary' : 'secondary' }
+						isPressed={ breakpoint === 'mobile' }
+						onClick={ () => setBreakpoint( 'mobile' ) }
+					>
+						{ __( 'Mobile', 'navigation-designer' ) }
+					</Button>
+				</ButtonGroup>
+			</div>
 
 			{ GROUP_CATEGORIES[ group ].map( ( category ) => (
 				<div key={ category.title }>
